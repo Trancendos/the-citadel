@@ -1,0 +1,4 @@
+* @Trancendos
+.github/workflows/* @Trancendos
+package.json @Trancendos
+pnpm-lock.yaml @Trancendos
