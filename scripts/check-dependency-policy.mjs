@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 
-import { execSync } from "node:child_process";
 import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { resolve, join } from "node:path";
+import { logError, logInfo, runCommand, writeJsonReport } from "./lib/logger.mjs";
 
 const PACKAGE_JSON_PATH = resolve(process.cwd(), "package.json");
+const REPORTS_DIR = resolve(process.cwd(), "reports");
 
 const POLICY = {
   maxMajorLag: 1, // N-1 is allowed, N-2 and older fails
@@ -34,10 +35,7 @@ function isLocalOrWorkspaceSpec(versionSpec) {
 
 function getLatestVersion(pkgName) {
   const command = `npm view ${JSON.stringify(pkgName)} version --json`;
-  const output = execSync(command, {
-    encoding: "utf8",
-    stdio: ["ignore", "pipe", "pipe"],
-  }).trim();
+  const output = runCommand(command);
 
   const parsed = JSON.parse(output);
   if (Array.isArray(parsed)) return parsed[parsed.length - 1];
@@ -59,6 +57,8 @@ function collectDependencies(packageJson) {
 }
 
 function main() {
+  logInfo("dependency_policy.start", { packageJson: PACKAGE_JSON_PATH, maxMajorLag: POLICY.maxMajorLag });
+
   const packageJson = parseJsonFile(PACKAGE_JSON_PATH);
   const deps = collectDependencies(packageJson);
   const results = [];
@@ -143,11 +143,24 @@ function main() {
     );
   }
 
+  const report = {
+    generatedAt: new Date().toISOString(),
+    policy: POLICY,
+    totalDependencies: deps.length,
+    failures: failures.length,
+    results,
+  };
+  const reportPath = join(REPORTS_DIR, `dependency-policy-${new Date().toISOString().slice(0, 10)}.json`);
+  writeJsonReport(reportPath, report);
+
   if (failures.length > 0) {
-    console.error(`\nPolicy failed: ${failures.length} dependency(ies) are older than N-1.`);
+    const message = `Policy failed: ${failures.length} dependency(ies) are older than N-1.`;
+    logError("dependency_policy.failed", { failures: failures.length });
+    console.error(`\n${message}`);
     process.exit(1);
   }
 
+  logInfo("dependency_policy.passed", { dependencyCount: deps.length });
   console.log("\nPolicy passed: dependencies are within N/N-1 major range.");
 }
 

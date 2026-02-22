@@ -13,7 +13,11 @@
     "typecheck": "tsc --noEmit",
     "audit:deps": "pnpm audit --audit-level=high",
     "deps:policy": "node scripts/check-dependency-policy.mjs",
-    "security:check": "pnpm audit --audit-level=high && node scripts/check-dependency-policy.mjs"
+    "security:check": "pnpm audit --audit-level=high && node scripts/check-dependency-policy.mjs",
+    "validate:prod": "node scripts/validate-production-readiness.mjs",
+    "compliance:check": "node scripts/check-regulatory-alignment.mjs",
+    "analyze:org": "node scripts/analyze-org-platform-gaps.mjs Trancendos",
+    "quality:gate": "pnpm typecheck && pnpm test && pnpm build && pnpm security:check && pnpm compliance:check && pnpm validate:prod"
   },
   "author": "Trancendos",
   "license": "MIT",

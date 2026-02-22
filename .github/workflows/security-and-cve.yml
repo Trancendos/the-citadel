@@ -55,6 +55,13 @@ jobs:
       - name: Enforce dependency N/N-1 policy
         run: node scripts/check-dependency-policy.mjs
 
+      - name: Upload dependency policy report
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-policy-report
+          path: reports/dependency-policy-*.json
+          if-no-files-found: warn
+
   trivy-filesystem-scan:
     runs-on: ubuntu-latest
     steps:

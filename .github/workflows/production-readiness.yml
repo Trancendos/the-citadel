@@ -1,0 +1,54 @@
+name: Production Readiness Validation
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - cursor/**
+  schedule:
+    - cron: "40 5 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  readiness:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck, test, build
+        run: pnpm typecheck && pnpm test && pnpm build
+
+      - name: Security and dependency policy checks
+        run: pnpm security:check
+
+      - name: Regulatory alignment checks
+        run: pnpm compliance:check
+
+      - name: Production readiness validation
+        run: pnpm validate:prod
+
+      - name: Upload readiness and compliance reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-readiness-reports
+          path: reports/*.json
+          if-no-files-found: warn

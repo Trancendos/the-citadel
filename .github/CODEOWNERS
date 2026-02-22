@@ -2,3 +2,5 @@
 .github/workflows/* @Trancendos
 package.json @Trancendos
 pnpm-lock.yaml @Trancendos
+scripts/* @Trancendos
+docs/* @Trancendos

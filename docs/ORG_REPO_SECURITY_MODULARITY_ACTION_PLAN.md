@@ -20,10 +20,10 @@ Checks performed across first-party repos:
 
 ### Baseline security controls (43 source repos)
 
-- missing workflows: **41/43**
-- missing Dependabot config: **41/43**
-- missing SECURITY.md: **41/43**
-- missing CODEOWNERS: **43/43**
+- missing workflows: **40/43**
+- missing Dependabot config: **40/43**
+- missing SECURITY.md: **40/43**
+- missing CODEOWNERS: **42/43**
 
 ### Structural/modularity signal
 
@@ -38,6 +38,8 @@ Checks performed across first-party repos:
 
 - repos using `workspace:*` references in standalone repos: **40/43**
 - repos missing explicit Node engine policy: **43/43**
+- repos missing lockfiles: **41/43**
+- repos missing branch protection: **43/43**
 
 This indicates broad template duplication and a large gap between intended modular architecture and implemented, independently operable repositories.
 
@@ -53,21 +55,27 @@ Completed as a hardened baseline/template:
    - Node matrix: 20 and 22 (N/N-1 policy target)
 3. **SBOM generation**
    - `.github/workflows/sbom.yml`
-4. **Dependency update automation**
+4. **Production readiness and compliance automation**
+   - `.github/workflows/production-readiness.yml`
+   - `.github/workflows/org-gap-analysis.yml`
+5. **Dependency update automation**
    - `.github/dependabot.yml`
-5. **Governance/security metadata**
+6. **Governance/security metadata**
    - `SECURITY.md`
    - `.github/CODEOWNERS`
-6. **Dependency and installability fixes**
+7. **Dependency and installability fixes**
    - removed unresolved `workspace:*` dependency in this repo
    - upgraded toolchain deps to current versions
    - added lockfile and `.gitignore`
-7. **Policy enforcement tooling**
+8. **Policy enforcement tooling**
    - `scripts/check-dependency-policy.mjs`
    - enforces dependency major lag not older than N-1
-8. **Quality baseline**
+9. **Quality baseline**
    - added `src/index.test.ts`
    - added local scripts for typecheck/security checks in `package.json`
+10. **Structured logging and reporting**
+   - script log utilities (`scripts/lib/logger.mjs`, `scripts/lib/logging.sh`)
+   - generated machine-readable evidence reports in `reports/*.json`
 
 ## 4) Required Standards Per Repo (Target State)
 

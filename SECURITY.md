@@ -35,6 +35,7 @@ This repository includes:
 - scheduled CVE checks (`pnpm audit`, Trivy, CodeQL)
 - secret scanning (`gitleaks`)
 - scheduled SBOM generation (CycloneDX)
+- production readiness and compliance validation workflows
 
 ## Hardening Expectations
 
