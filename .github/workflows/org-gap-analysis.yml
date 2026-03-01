@@ -1,0 +1,33 @@
+name: Org Platform Gap Analysis
+
+on:
+  schedule:
+    - cron: "55 5 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  analyze-org-gaps:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Run org gap analysis with structured logs
+        run: node scripts/analyze-org-platform-gaps.mjs Trancendos 200 reports
+
+      - name: Upload org gap analysis artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: org-gap-analysis
+          path: reports/platform-gap-analysis-*.*
+          if-no-files-found: error

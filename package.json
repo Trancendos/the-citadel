@@ -8,18 +8,27 @@
     "build": "tsc",
     "dev": "tsx watch src/index.ts",
     "start": "node dist/index.js",
-    "test": "vitest"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "audit:deps": "pnpm audit --audit-level=high",
+    "deps:policy": "node scripts/check-dependency-policy.mjs",
+    "security:check": "pnpm audit --audit-level=high && node scripts/check-dependency-policy.mjs",
+    "validate:prod": "node scripts/validate-production-readiness.mjs",
+    "compliance:check": "node scripts/check-regulatory-alignment.mjs",
+    "analyze:org": "node scripts/analyze-org-platform-gaps.mjs Trancendos",
+    "quality:gate": "pnpm typecheck && pnpm test && pnpm build && pnpm security:check && pnpm compliance:check && pnpm validate:prod"
   },
   "author": "Trancendos",
   "license": "MIT",
-  "dependencies": {
-    "@trancendos/shared-core": "workspace:*",
-    "zod": "^3.22.4"
+  "engines": {
+    "node": ">=20 <23"
   },
+  "packageManager": "pnpm@10.26.0",
   "devDependencies": {
-    "@types/node": "^20.10.0",
-    "typescript": "^5.3.0",
-    "tsx": "^4.6.0",
-    "vitest": "^1.0.0"
+    "@types/node": "^25.3.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
   }
 }
